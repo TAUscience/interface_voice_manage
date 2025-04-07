@@ -295,6 +295,8 @@ class VoiceRecorder:
         play_original_button.pack(pady=10)
         play_filtered_button.pack(pady=10)
 
+        show_cutfreq_button = tk.Button(audio_window, text="Ver Frecuencia de Corte", command=self.show_cutfreq_graph)
+        show_cutfreq_button.pack(pady=10)
         # Crear gráficas para mostrar las señales de audio
         self.plot_audio_graphs(audio_window)
 
@@ -355,5 +357,30 @@ class VoiceRecorder:
         canvas = FigureCanvasTkAgg(fig, master=parent_window)
         canvas.draw()
         canvas.get_tk_widget().pack()
+
+    def show_cutfreq_graph(self):
+        cutfreq = self.scale_cutfreq.get()  # Obtener el valor del slider (frecuencia de corte)
+
+        # Crear una nueva ventana
+        cutfreq_window = tk.Toplevel(self.root)
+        cutfreq_window.title("Gráfica de Frecuencia de Corte")
+        cutfreq_window.geometry("600x400")
+
+        # Crear la figura y el eje para la gráfica
+        fig, ax = plt.subplots()
+        ax.axvline(x=cutfreq, color='red', linestyle='--', label=f'Frecuencia de corte: {cutfreq:.1f} Hz')
+        ax.set_title('Frecuencia de Corte')
+        ax.set_xlabel('Frecuencia (Hz)')
+        ax.set_xlim(0, self.audio_sr / 2)
+        ax.set_ylim(0, 1)
+        ax.legend()
+        ax.grid(True)
+
+        # Incrustar la figura de matplotlib dentro de la ventana Tkinter
+        from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+        canvas = FigureCanvasTkAgg(fig, master=cutfreq_window)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
 
 VoiceRecorder()
